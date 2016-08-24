@@ -1,0 +1,29 @@
+{
+  "name": "angular sqlcipher",
+  "authors": [
+    "Jacky Wang <www.wangzixiao@gmail.com>"
+  ],
+  "dependencies": {
+    "angular":"~1.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ZixiaoWang/cordova-angular-sqlcipher.git"
+  },
+  "description": "The mid-layer between Cordova angular project and cordova sqlcipher plugins.",
+  "main": "angular-sqlcipher.js",
+  "keywords": [
+    "Angular",
+    "Sqlcipher",
+    "Cordova"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/ZixiaoWang/cordova-angular-sqlcipher",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
