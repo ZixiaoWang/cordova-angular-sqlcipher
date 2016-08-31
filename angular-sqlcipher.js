@@ -1,3 +1,4 @@
+'use strict';
 
 angular.module('ngSqlcipher', [])
     .provider('sqlcipherConfig', function sqlcipherConfigProvider(){
@@ -456,38 +457,4 @@ angular.module('ngSqlcipher', [])
          * Return a Sql object
          */
         return new Sql();
-    }]);
-    
-angular.module('app', ['ngSqlcipher'])
-    .config(['sqlcipherConfigProvider', function(sqlcipherConfigProvider){
-        var options = {
-            name:'first.db',
-            password:'admin',
-            location:'default'
-        };
-        sqlcipherConfigProvider.test(function(){
-            console.log('Connection OK');
-        }, function(error){
-            console.log('Connection NOT OK', error);
-        });
-        sqlcipherConfigProvider.open(options);
-    }])
-    .controller('appCtrl', ['$scope','$sqlcipher', '$window',function($scope, $sqlcipher, $window){
-        $scope.heading = 'Initializing...';
-        $window.sqlcipher = $sqlcipher;
-        $sqlcipher
-            .exec('DROP TABLE IF EXISTS myTable')
-            .catch(function(error){
-                console.log(error);
-            })
-        $sqlcipher
-            .exec('CREATE TABLE myTable (id, name)')
-            .then(function(resultSet){
-                $scope.heading = 'Created';
-                console.log(resultSet);
-            })
-            .catch(function(error){
-                $scope.heading = 'Error';
-                console.log('CREATE ERROR: ', error);
-            }); 
     }]);
