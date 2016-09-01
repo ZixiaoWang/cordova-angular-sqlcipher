@@ -7,6 +7,7 @@ The mid-layer between Cordova Angular project and Cordova Sqlcipher plugin.
   <code>cordova plugin add https://github.com/litehelpers/Cordova-sqlcipher-adapter</code>
 3. Bower install angular-sqlcipher by entering cmd <code>bower install angular-sqlcipher</code> 
 
+------
 ### How to use it?  
 1. Add following <code>script</code> tag into your html.
 ```html
@@ -24,6 +25,7 @@ app.
     }];
 ```
 
+------
 ### Config and create database  
 The $sqlcipher services is the object returned after creating database. In original command  
 ```javascript 
@@ -44,6 +46,7 @@ app
     }])
 ```
 
+------
 ### APIs  
 | functions |  |
 |----|----|
@@ -192,6 +195,7 @@ $sqlcipher
     .catch((res) => console.log(res))
 ```
 
+------
 ### What if I do not want to use those APIs?  
 For this situation, use following methods:  
 <code> var db = $sqlcipher.core; </code>  
