@@ -6,7 +6,7 @@ angular.module('ngSqlcipher', [])
             name:'admin',
             password:'admin',
             location:'default',
-            iosDatabaseLocation:'defalult'
+            iosDatabaseLocation:'default'
         };
         var ifTest = false;
         this.onConnectSuccess = new Function();
@@ -113,7 +113,7 @@ angular.module('ngSqlcipher', [])
                     _t += options[item].notNull?'NOT NULL ':'';
                     _t += options[item].primary?'PRIMARY ':'';
                     _t += options[item].autoIncrement?'AUTOINCREMENT ':'';
-                    _t += options[item].default?'DEFAULT ' + options[item].defalult:'';
+                    _t += options[item].default?'DEFAULT ' + options[item].default:'';
                     _t += options[item].unique?'UNIQUE ':'';
                     _t += options[item].check?options[item].check:'';
                     _opt.push(_t);
@@ -132,7 +132,7 @@ angular.module('ngSqlcipher', [])
                         _t += item.notNull?'NOT NULL ':'';
                         _t += item.primary?'PRIMARY ':'';
                         _t += item.autoIncrement?'AUTOINCREMENT ':'';
-                        _t += item.default?'DEFAULT ' + options[item].defalult:'';
+                        _t += item.default?'DEFAULT ' + options[item].default:'';
                         _t += item.unique?'UNIQUE ':'';
                         _t += item.check?options[item].check:'';
                         _opt.push(_t);
@@ -393,7 +393,7 @@ angular.module('ngSqlcipher', [])
                             _t += item.notNull?'NOT NULL ':'';
                             _t += item.primary?'PRIMARY ':'';
                             _t += item.autoIncrement?'AUTOINCREMENT ':'';
-                            _t += item.default?'DEFAULT ' + options[item].defalult:'';
+                            _t += item.default?'DEFAULT ' + options[item].default:'';
                             _t += item.unique?'UNIQUE ':'';
                             _t += item.check?options[item].check:'';
                             _opt.push(_temp + _t);
