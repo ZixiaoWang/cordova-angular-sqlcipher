@@ -97,8 +97,8 @@ angular.module('ngSqlcipher', [])
             var _cmd = 'CREATE TABLE ' + table_name + ' ';
             var _opt = []; var _t = '';
             
-            /** "id NOT NULL AUTO INCREMENT, name TEXT, age INTEGER" */
-            /** ["id NOT NULL AUTO INCREMENT", "name TEXT", "age INTEGER"] */
+            /** "id NOT NULL AUTOINCREMENT, name TEXT, age INTEGER" */
+            /** ["id NOT NULL AUTOINCREMENT", "name TEXT", "age INTEGER"] */
             /** {
              *      id:{type:'INTEGER', notNull:false, autoIncrement:true, primary:true},
              *      name:{type:'TEXT', notNull:false},
@@ -112,7 +112,7 @@ angular.module('ngSqlcipher', [])
                     _t += options[item].type?options[item].type:'';
                     _t += options[item].notNull?'NOT NULL ':'';
                     _t += options[item].primary?'PRIMARY ':'';
-                    _t += options[item].autoIncrement?'AUTO INCREMENT ':'';
+                    _t += options[item].autoIncrement?'AUTOINCREMENT ':'';
                     _t += options[item].default?'DEFAULT ' + options[item].defalult:'';
                     _t += options[item].unique?'UNIQUE ':'';
                     _t += options[item].check?options[item].check:'';
@@ -131,7 +131,7 @@ angular.module('ngSqlcipher', [])
                         _t += item.type?item.type+' ':'';
                         _t += item.notNull?'NOT NULL ':'';
                         _t += item.primary?'PRIMARY ':'';
-                        _t += item.autoIncrement?'AUTO INCREMENT ':'';
+                        _t += item.autoIncrement?'AUTOINCREMENT ':'';
                         _t += item.default?'DEFAULT ' + options[item].defalult:'';
                         _t += item.unique?'UNIQUE ':'';
                         _t += item.check?options[item].check:'';
@@ -146,8 +146,9 @@ angular.module('ngSqlcipher', [])
                 throw new Error('Options has to be String or Array');
             }
             
-            sqlcipherConfig.executeSql(_cmd, successFn, errorFn);
-            return this;
+            return $q(function(resolve, reject){
+                sqlcipherConfig.executeSql(_cmd, [], resolve, reject);    
+            });
         }
     
         /** Drop Table */
@@ -159,9 +160,10 @@ angular.module('ngSqlcipher', [])
                 throw new Error('Table name must be in String type.');
             }else{
                 var _cmd = 'DROP TABLE ' + table_name;
-                sqlcipherConfig.executeSql(_cmd, successFn, errorFn);
+                return $q(function(resolve, reject){
+                    sqlcipherConfig.executeSql(_cmd, [], resolve, reject);    
+                });
             }
-            return this;
         }
     
         /** Truncate Table */
@@ -390,7 +392,7 @@ angular.module('ngSqlcipher', [])
                             _t += item.type?item.type+' ':'';
                             _t += item.notNull?'NOT NULL ':'';
                             _t += item.primary?'PRIMARY ':'';
-                            _t += item.autoIncrement?'AUTO INCREMENT ':'';
+                            _t += item.autoIncrement?'AUTOINCREMENT ':'';
                             _t += item.default?'DEFAULT ' + options[item].defalult:'';
                             _t += item.unique?'UNIQUE ':'';
                             _t += item.check?options[item].check:'';
