@@ -46,8 +46,8 @@ app
 
 ### APIs  
 | functions |  |
-|--|--|
-|[trans(_fn_)](#trans)| equivalent to <code>db.transaction(fn)</code>|
+|----|----|
+| [trans(_fn_)](#trans) | equivalent to <code>db.transaction(fn)</code> |
 |[readTrans(_fn_)](#readTrans)| equivalent to <code>db.readTransaction(fn)</code>|
 |[createTable(_table_name_, _options_)](#createTable)|_table_name_ : String, <br> _options_ : Array, String|
 |[dropTable(_table_name_)](#dropTable)| _table_name_ : String |
