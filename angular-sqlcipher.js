@@ -94,7 +94,7 @@ angular.module('ngSqlcipher', [])
          */
         /**Create Table */
         Sql.prototype.createTable = function(table_name, options, successFn, errorFn){
-            var _cmd = 'CREATE TABLE ' + table_name + ' ';
+            var _cmd = 'CREATE TABLE IF NOT EXISTS' + table_name + ' ';
             var _opt = []; var _t = '';
             
             /** "id NOT NULL AUTOINCREMENT, name TEXT, age INTEGER" */
@@ -201,7 +201,7 @@ angular.module('ngSqlcipher', [])
              */
             var _cmd = '';
             var _cols = [];
-            var _conditions = {};
+            var _conditions = conditions;
             
             if(typeof table_name != 'string'){ throw new Error('table name must be a String.'); }
             
@@ -219,7 +219,7 @@ angular.module('ngSqlcipher', [])
             if(_conditions){
                 // where
                 if(_conditions.where){
-                    _cmd = ' WHERE ' + _conditions.where.replace(/&&/g, ' AND ').replace(/\|\|/g, ' OR ');    
+                    _cmd += ' WHERE ' + _conditions.where.replace(/&&/g, ' AND ').replace(/\|\|/g, ' OR ');    
                 }
                                 
                 // group by
@@ -393,9 +393,9 @@ angular.module('ngSqlcipher', [])
                             _t += item.notNull?'NOT NULL ':'';
                             _t += item.primary?'PRIMARY ':'';
                             _t += item.autoIncrement?'AUTOINCREMENT ':'';
-                            _t += item.default?'DEFAULT ' + options[item].default:'';
+                            _t += item.default?'DEFAULT ' + item.default:'';
                             _t += item.unique?'UNIQUE ':'';
-                            _t += item.check?options[item].check:'';
+                            _t += item.check?item.check:'';
                             _opt.push(_temp + _t);
                         }
                     });
@@ -427,7 +427,7 @@ angular.module('ngSqlcipher', [])
             var _options = Object.keys(options);
             
             _options.forEach(function(colName, key){
-                if(typeof options[colName] === 'number'){
+                if(typeof options[colName] === 'number' || typeof options[colName] === 'boolean'){
                     colset.push(colName + ' = ' + options[colName]);
                 }else if(typeof options[colName] === 'string'){
                     colset.push(colName + ' = "' + options[colName] + '"');
@@ -441,7 +441,7 @@ angular.module('ngSqlcipher', [])
                         throw new Error(colName + ' cannot resolve type.');
                     }
                 }else{
-                    throw new Error(colName + ' cannot resolve type.');
+                    colset.push(colName + ' = "' + JSON.stringify(options[colName]) + '"');
                 }
             });
             cmd += colset.join();
