@@ -41,7 +41,7 @@ angular.module('ngSqlcipher', [])
                 $window.sqlitePlugin.echoTest(this.onConnectSuccess, this.onConnectError);    
             }
             _sqlcipher = $window.sqlitePlugin.openDatabase(_obj, this.onSuccess, this.onError);
-            _sqlcipher.__proto__.addTrans = _sqlcipher.__proto__.addTransaction;
+                _sqlcipher.__proto__.addTrans = _sqlcipher.__proto__.addTransaction;
             _sqlcipher.__proto__.addTransaction = function(t){
                 t.__proto__.exec = t.__proto__.executeSql;
                 _sqlcipher.__proto__.addTrans.call(this, t);
@@ -94,8 +94,17 @@ angular.module('ngSqlcipher', [])
          */
         /**Create Table */
         Sql.prototype.createTable = function(table_name, options, successFn, errorFn){
-            var _cmd = 'CREATE TABLE IF NOT EXISTS' + table_name + ' ';
+            var _cmd = 'CREATE TABLE IF NOT EXISTS ' + table_name + ' ';
             var _opt = []; var _t = '';
+            function massageType(input){
+                if(typeof input === 'string') return '"'+input+'"';
+                else if(Array.isArray(input)) return JSON.stringify(input);
+                else if(typeof input === 'boolean') return input;
+                else if(typeof input === 'number') return input;
+                else if(typeof input === 'null' || typeof input === 'undefined') return null;
+                else if(typeof input === 'function') return input();
+                else return input.toString();
+            }
             
             /** "id NOT NULL AUTOINCREMENT, name TEXT, age INTEGER" */
             /** ["id NOT NULL AUTOINCREMENT", "name TEXT", "age INTEGER"] */
@@ -111,9 +120,9 @@ angular.module('ngSqlcipher', [])
                     _t = item + ' ';
                     _t += options[item].type?options[item].type:'';
                     _t += options[item].notNull?'NOT NULL ':'';
-                    _t += options[item].primary?'PRIMARY ':'';
+                    _t += options[item].primary?'PRIMARY KEY ':'';
                     _t += options[item].autoIncrement?'AUTOINCREMENT ':'';
-                    _t += options[item].default?'DEFAULT ' + options[item].default:'';
+                    _t += options[item].default?'DEFAULT ' + massageType(options[item].default):'';
                     _t += options[item].unique?'UNIQUE ':'';
                     _t += options[item].check?options[item].check:'';
                     _opt.push(_t);
@@ -130,11 +139,11 @@ angular.module('ngSqlcipher', [])
                         _t += item.name + ' ';
                         _t += item.type?item.type+' ':'';
                         _t += item.notNull?'NOT NULL ':'';
-                        _t += item.primary?'PRIMARY ':'';
+                        _t += item.primary?'PRIMARY KEY ':'';
                         _t += item.autoIncrement?'AUTOINCREMENT ':'';
-                        _t += item.default?'DEFAULT ' + options[item].default:'';
+                        _t += item.default?'DEFAULT ' + massageType(item.default):'';
                         _t += item.unique?'UNIQUE ':'';
-                        _t += item.check?options[item].check:'';
+                        _t += item.check?item.check:'';
                         _opt.push(_t);
                     }
                 });
@@ -282,6 +291,15 @@ angular.module('ngSqlcipher', [])
             if (typeof table_name != 'string'){ throw new Error(table_name + ' is not a String.'); }
             if (!(dataSet instanceof Array)) { throw new Error('options must be an Array'); }
             if (dataSet.length == 0) { throw new Error('option length is 0'); }
+            function massageType(input){
+                if(typeof input === 'string') return '"'+input+'"';
+                else if(Array.isArray(input)) return JSON.stringify(input);
+                else if(typeof input === 'boolean') return input;
+                else if(typeof input === 'number') return input;
+                else if(typeof input === 'null' || typeof input === 'undefined') return null;
+                else if(typeof input === 'function') return input();
+                else return input.toString();
+            }
             
             var cols = [];
             var cmd = 'INSERT INTO ' + table_name;
@@ -296,13 +314,11 @@ angular.module('ngSqlcipher', [])
                         cols.forEach(function(colName, colIndex){
                             if(item[colName]) {
                                 if(colIndex < (cols.length - 1)){
-                                    cmd += '"';
-                                    cmd += item[colName]?item[colName]:'';
-                                    cmd += '" AS ' + colName + ', ';
+                                    cmd += massageType(item[colName]);
+                                    cmd += ' AS ' + colName + ', ';
                                 }else{
-                                    cmd += '"';
-                                    cmd += item[colName]?item[colName]:'';
-                                    cmd += '" AS ' + colName;
+                                    cmd += massageType(item[colName]);
+                                    cmd += ' AS ' + colName;
                                 }
                             }
                         });
@@ -311,13 +327,11 @@ angular.module('ngSqlcipher', [])
                         cols.forEach(function(colName, colIndex){
                             if(item[colName]) {
                                 if(colIndex < (cols.length - 1)){
-                                    cmd += '"';
-                                    cmd += item[colName]?item[colName]:'';
-                                    cmd += '" AS ' + colName + ', ';
+                                    cmd += massageType(item[colName]);
+                                    cmd += ' AS ' + colName + ', ';
                                 }else{
-                                    cmd += '"';
-                                    cmd += item[colName]?item[colName]:'';
-                                    cmd += '" AS ' + colName;
+                                    cmd += massageType(item[colName]);
+                                    cmd += ' AS ' + colName;
                                 }
                             }
                         });
@@ -391,7 +405,7 @@ angular.module('ngSqlcipher', [])
                             _t += item.name + ' ';
                             _t += item.type?item.type+' ':'';
                             _t += item.notNull?'NOT NULL ':'';
-                            _t += item.primary?'PRIMARY ':'';
+                            _t += item.primary?'PRIMARY KEY ':'';
                             _t += item.autoIncrement?'AUTOINCREMENT ':'';
                             _t += item.default?'DEFAULT ' + item.default:'';
                             _t += item.unique?'UNIQUE ':'';
@@ -459,4 +473,15 @@ angular.module('ngSqlcipher', [])
          * Return a Sql object
          */
         return new Sql();
-    }]);
+    }])
+    .factory('$tools', function(){
+        return {
+            dataMassager:function(result){
+                var output = [];
+                for(var i=0; i<result.rows.length; i++){
+                    output.push(result.rows.item(i));
+                }
+                return output;
+            }
+        }
+    })
