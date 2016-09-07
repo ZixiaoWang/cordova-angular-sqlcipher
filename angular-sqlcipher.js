@@ -1,5 +1,3 @@
-'use strict';
-
 angular.module('ngSqlcipher', [])
     .provider('sqlcipherConfig', function sqlcipherConfigProvider(){
         var _obj = {
@@ -263,7 +261,8 @@ angular.module('ngSqlcipher', [])
                 }
 
             }
-            
+           
+            console.log(_cmd);
             return $q(function(_resolve, _reject){
                 sqlcipherConfig.executeSql(_cmd, [], _resolve, _reject);
             });
@@ -292,56 +291,49 @@ angular.module('ngSqlcipher', [])
             if (!(dataSet instanceof Array)) { throw new Error('options must be an Array'); }
             if (dataSet.length == 0) { throw new Error('option length is 0'); }
             function massageType(input){
-                if(typeof input === 'string') return '"'+input+'"';
+                if(typeof input === 'string' || typeof input === 'boolean') return '"'+input+'"';
                 else if(Array.isArray(input)) return JSON.stringify(input);
-                else if(typeof input === 'boolean') return input;
                 else if(typeof input === 'number') return input;
                 else if(typeof input === 'null' || typeof input === 'undefined') return null;
                 else if(typeof input === 'function') return input();
                 else return input.toString();
             }
             
-            var cols = [];
-            var cmd = 'INSERT INTO ' + table_name;
+            var cols = []; var objCol = [];
+            var cmd = '';
+            var state = 'INSERT INTO ' + table_name;
             
             function insertRows(resultSet, successFn, errorFn){
                 for(var i=0; i<resultSet.rows.length; i++){
                     cols.push(resultSet.rows.item(i).name);
                 }
                 dataSet.forEach(function(item, key){
+                    var uni = [];
                     if (key == 0){
                         cmd += ' SELECT ';
                         cols.forEach(function(colName, colIndex){
                             if(item[colName]) {
-                                if(colIndex < (cols.length - 1)){
-                                    cmd += massageType(item[colName]);
-                                    cmd += ' AS ' + colName + ', ';
-                                }else{
-                                    cmd += massageType(item[colName]);
-                                    cmd += ' AS ' + colName;
-                                }
+                                if(objCol.indexOf(colName) === -1) objCol.push(colName);
+                                uni.push(massageType(item[colName]) + ' AS ' + colName);
                             }
                         });
+                        cmd += uni.join(', ');
+                        uni = [];
                     }else{
                         cmd += ' UNION ALL SELECT ';
                         cols.forEach(function(colName, colIndex){
                             if(item[colName]) {
-                                if(colIndex < (cols.length - 1)){
-                                    cmd += massageType(item[colName]);
-                                    cmd += ' AS ' + colName + ', ';
-                                }else{
-                                    cmd += massageType(item[colName]);
-                                    cmd += ' AS ' + colName;
-                                }
+                                if(objCol.indexOf(colName) === -1) objCol.push(colName);
+                                uni.push(massageType(item[colName]) + ' AS ' + colName);
                             }
                         });
+                        cmd += uni.join(', ');
+                        uni = [];
                     }
                 });
-                /*
-                return $q(function(resolve, reject){
-                    sqlcipherConfig.executeSql(cmd, resolve, reject);
-                })
-                */
+                
+                cmd = state + ' ( ' + objCol.join(', ') + ' )' + cmd;
+                console.log(cmd);
                 return sqlcipherConfig.executeSql(cmd, [], successFn, errorFn);
             }
             
@@ -441,9 +433,9 @@ angular.module('ngSqlcipher', [])
             var _options = Object.keys(options);
             
             _options.forEach(function(colName, key){
-                if(typeof options[colName] === 'number' || typeof options[colName] === 'boolean'){
+                if(typeof options[colName] === 'number'){
                     colset.push(colName + ' = ' + options[colName]);
-                }else if(typeof options[colName] === 'string'){
+                }else if(typeof options[colName] === 'string' || typeof options[colName] === 'boolean'){
                     colset.push(colName + ' = "' + options[colName] + '"');
                 }else if(typeof options[colName] === 'function'){
                     var _ = options[colName]();
