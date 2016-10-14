@@ -250,7 +250,7 @@ angular.module('ngSqlcipher', [])
                 if(_conditions.orderby && _conditions.orderby instanceof Array){
                     _cmd += ' ORDER BY ' + _conditions.orderby.join();
                 }else if(_conditions.orderby && typeof _conditions.orderby === 'string'){
-                    _cmd += _conditions.orderby;
+                    _cmd += ' ORDER BY ' + _conditions.orderby;
                 }
                 
                 // sort
