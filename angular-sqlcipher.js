@@ -312,7 +312,7 @@ angular.module('ngSqlcipher', [])
                     if (key == 0){
                         cmd += ' SELECT ';
                         cols.forEach(function(colName, colIndex){
-                            if(item[colName]) {
+                            if(item[colName] !== undefined) {
                                 if(objCol.indexOf(colName) === -1) objCol.push(colName);
                                 uni.push(massageType(item[colName]) + ' AS ' + colName);
                             }
