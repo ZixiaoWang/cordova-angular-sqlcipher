@@ -322,7 +322,7 @@ angular.module('ngSqlcipher', [])
                     }else{
                         cmd += ' UNION ALL SELECT ';
                         cols.forEach(function(colName, colIndex){
-                            if(item[colName]) {
+                            if(item[colName] !== undefined) {
                                 if(objCol.indexOf(colName) === -1) objCol.push(colName);
                                 uni.push(massageType(item[colName]) + ' AS ' + colName);
                             }
