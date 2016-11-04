@@ -3,8 +3,7 @@ angular.module('ngSqlcipher', [])
         var _obj = {
             name:'admin',
             password:'admin',
-            location:'default',
-            iosDatabaseLocation:'default'
+            location:'default'
         };
         var ifTest = false;
         this.onConnectSuccess = new Function();
